@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Metetron.ConfigurationServer.Persistence.EntityConfigurations
 {
-    public class AppConfiguration : IEntityTypeConfiguration<App>
+    public class AppConfig : IEntityTypeConfiguration<App>
     {
         public void Configure(EntityTypeBuilder<App> builder)
         {
