@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Metetron.ConfigurationServer.Models
 {
@@ -9,6 +10,7 @@ namespace Metetron.ConfigurationServer.Models
         public int AppId { get; set; }
         public string? HostName { get; set; }
         public string Environment { get; set; } = "Production";
+        public IList<AppSetting> AppSettings { get; set; } = new List<AppSetting>();
         public DateTime CreatedOn { get; set; }
         public DateTime? EditedOn { get; set; }
     }
