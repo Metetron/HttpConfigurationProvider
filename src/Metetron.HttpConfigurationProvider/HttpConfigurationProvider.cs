@@ -44,6 +44,9 @@ namespace Metetron.HttpConfigurationProvider
             {
                 Debug.WriteLine("Fetching the settings failed, {0}, {1}", e.Message, e.StackTrace);
 
+                if (!_settings.SilenceExceptions)
+                    throw e;
+
                 return new List<KeyValuePair<string, string>>();
             }
         }
