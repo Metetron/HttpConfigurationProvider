@@ -8,11 +8,11 @@ namespace Metetron.HttpConfigurationProvider
 {
     public class HttpConfigurationProvider : ConfigurationProvider
     {
-        private readonly string _requestUri;
+        private readonly HttpConfigurationSourceSettings _settings;
 
-        public HttpConfigurationProvider(string requestUri)
+        public HttpConfigurationProvider(HttpConfigurationSourceSettings settings)
         {
-            _requestUri = requestUri;
+            _settings = settings;
         }
 
         public async override void Load()
@@ -24,22 +24,23 @@ namespace Metetron.HttpConfigurationProvider
 
         private async Task<AppConfiguration> LoadSettingsFromServerAsync()
         {
-            var data = await new HttpClient().GetAsync(_requestUri);
+            var content = JsonSerializer.Serialize(new { appName = _settings.AppName, hostName = _settings.HostName });
+            var data = await new HttpClient().PostAsync(_settings.ServerUri, new StringContent(content));
 
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             };
-            var content = await data.Content.ReadAsStringAsync();
+            var response = await data.Content.ReadAsStringAsync();
 
-            return JsonSerializer.Deserialize<AppConfiguration>(content, options);
+            return JsonSerializer.Deserialize<AppConfiguration>(response, options);
         }
 
         private void AddSettingsToConfiguration(AppConfiguration configuration)
         {
             foreach (var setting in configuration.Settings)
             {
-                Data.Add(setting.Name, setting.Value);
+                Data.Add(setting.Key, setting.Value);
             }
         }
     }

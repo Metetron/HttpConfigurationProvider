@@ -4,16 +4,16 @@ namespace Metetron.HttpConfigurationProvider
 {
     public class HttpConfigurationSource : IConfigurationSource
     {
-        private readonly string _requestUri;
+        private readonly HttpConfigurationSourceSettings _settings;
 
-        public HttpConfigurationSource(string requestUri)
+        public HttpConfigurationSource(HttpConfigurationSourceSettings settings)
         {
-            _requestUri = requestUri;
+            _settings = settings;
         }
 
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            return new HttpConfigurationProvider(_requestUri);
+            return new HttpConfigurationProvider(_settings);
         }
     }
 }
