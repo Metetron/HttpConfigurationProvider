@@ -1,3 +1,6 @@
+using System.Reflection;
+using AutoMapper;
+using MediatR;
 using Metetron.ConfigurationServer.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,6 +28,8 @@ namespace Metetron.ConfigurationServer
             services.AddControllersWithViews();
 
             services.AddDbContext<ConfigurationContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Configuration")));
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddMediatR(Assembly.GetExecutingAssembly());
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

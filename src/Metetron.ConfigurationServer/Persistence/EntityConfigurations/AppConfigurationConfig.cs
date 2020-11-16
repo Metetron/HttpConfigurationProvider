@@ -13,6 +13,9 @@ namespace Metetron.ConfigurationServer.Persistence.EntityConfigurations
 
             builder.Property(ac => ac.Environment)
                 .IsRequired();
+
+            builder.Property(ac => ac.HostName)
+                .IsRequired();
         }
     }
 }

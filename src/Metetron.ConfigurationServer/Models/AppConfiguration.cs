@@ -8,7 +8,7 @@ namespace Metetron.ConfigurationServer.Models
         public int Id { get; set; }
         public App? App { get; set; }
         public int AppId { get; set; }
-        public string? HostName { get; set; }
+        public string HostName { get; set; } = string.Empty;
         public string Environment { get; set; } = "Production";
         public IList<AppSetting> AppSettings { get; set; } = new List<AppSetting>();
         public DateTime CreatedOn { get; set; }
