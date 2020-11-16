@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -25,16 +27,25 @@ namespace Metetron.HttpConfigurationProvider
 
         private async Task<IEnumerable<KeyValuePair<string, string>>> LoadSettingsFromServerAsync()
         {
-            var content = JsonSerializer.Serialize(new { appName = _settings.AppName, hostName = _settings.HostName });
-            var data = await new HttpClient().PostAsync(_settings.ServerUri, new StringContent(content, Encoding.UTF8, "application/json"));
-
-            var options = new JsonSerializerOptions
+            try
             {
-                PropertyNameCaseInsensitive = true
-            };
-            var response = await data.Content.ReadAsStringAsync();
+                var content = JsonSerializer.Serialize(new { appName = _settings.AppName, hostName = _settings.HostName });
+                var data = await new HttpClient().PostAsync(_settings.ServerUri, new StringContent(content, Encoding.UTF8, "application/json"));
 
-            return JsonSerializer.Deserialize<IEnumerable<KeyValuePair<string, string>>>(response, options);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                var response = await data.Content.ReadAsStringAsync();
+
+                return JsonSerializer.Deserialize<IEnumerable<KeyValuePair<string, string>>>(response, options);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Fetching the settings failed, {0}, {1}", e.Message, e.StackTrace);
+
+                return new List<KeyValuePair<string, string>>();
+            }
         }
 
         private void AddSettingsToConfiguration(IEnumerable<KeyValuePair<string, string>> settings)
