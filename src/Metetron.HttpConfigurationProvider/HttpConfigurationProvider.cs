@@ -1,7 +1,8 @@
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Metetron.HttpConfigurationProvider.Models;
 using Microsoft.Extensions.Configuration;
 
 namespace Metetron.HttpConfigurationProvider
@@ -15,17 +16,17 @@ namespace Metetron.HttpConfigurationProvider
             _settings = settings;
         }
 
-        public async override void Load()
+        public override void Load()
         {
-            var configuration = await LoadSettingsFromServerAsync();
+            var settings = LoadSettingsFromServerAsync().GetAwaiter().GetResult();
 
-            AddSettingsToConfiguration(configuration);
+            AddSettingsToConfiguration(settings);
         }
 
-        private async Task<AppConfiguration> LoadSettingsFromServerAsync()
+        private async Task<IEnumerable<KeyValuePair<string, string>>> LoadSettingsFromServerAsync()
         {
             var content = JsonSerializer.Serialize(new { appName = _settings.AppName, hostName = _settings.HostName });
-            var data = await new HttpClient().PostAsync(_settings.ServerUri, new StringContent(content));
+            var data = await new HttpClient().PostAsync(_settings.ServerUri, new StringContent(content, Encoding.UTF8, "application/json"));
 
             var options = new JsonSerializerOptions
             {
@@ -33,12 +34,12 @@ namespace Metetron.HttpConfigurationProvider
             };
             var response = await data.Content.ReadAsStringAsync();
 
-            return JsonSerializer.Deserialize<AppConfiguration>(response, options);
+            return JsonSerializer.Deserialize<IEnumerable<KeyValuePair<string, string>>>(response, options);
         }
 
-        private void AddSettingsToConfiguration(AppConfiguration configuration)
+        private void AddSettingsToConfiguration(IEnumerable<KeyValuePair<string, string>> settings)
         {
-            foreach (var setting in configuration.Settings)
+            foreach (var setting in settings)
             {
                 Data.Add(setting.Key, setting.Value);
             }
