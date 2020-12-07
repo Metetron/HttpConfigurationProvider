@@ -24,8 +24,11 @@ namespace Metetron.ConfigurationServer.Features.AppSettings.GetAppSettings
         public Task<List<AppSettingsModel>> Handle(GetAppSettingsQuery request, CancellationToken cancellationToken)
         {
             return _context.AppSettings
-                .Where(c => c.AppConfiguration.HostName.Equals(request.HostName)
-                            && c.AppConfiguration.App.AppName.Equals(request.AppName))
+                .Where(c => c.AppConfiguration != null
+                            && c.AppConfiguration.App != null
+                            && c.AppConfiguration.HostName.Equals(request.HostName)
+                            && c.AppConfiguration.App.AppName.Equals(request.AppName)
+                            && c.AppConfiguration.Environment.Equals(request.Environment))
                 .ProjectTo<AppSettingsModel>(_configuration)
                 .ToListAsync(cancellationToken);
         }

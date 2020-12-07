@@ -7,5 +7,6 @@ namespace Metetron.ConfigurationServer.Features.AppSettings.GetAppSettings
     {
         public string AppName { get; set; } = string.Empty;
         public string HostName { get; set; } = string.Empty;
+        public string Environment { get; set; } = string.Empty;
     }
 }
