@@ -2,6 +2,11 @@ pool:
   vmImage: "ubuntu-latest"
 
 steps:
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk 5.x'
+  inputs:
+    version: 5.x
+    
 - task: GitVersion@5
   displayName: "GitVersion"
   inputs: 
