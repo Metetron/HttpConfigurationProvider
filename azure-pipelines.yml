@@ -1,0 +1,49 @@
+pool:
+  vmImage: "ubuntu-latest"
+
+steps:
+- task: GitVersion@5
+  displayName: "GitVersion"
+  inputs: 
+    runtime: "core"
+
+- task: DotNetCoreCli@2
+  displayName: "Build"
+  inputs:
+    command: "build"
+    projects: "**/*.csproj"
+    arguments: "-c $(BuildConfiguration)"
+
+- task: DotNetCoreCli@2
+  displayName: "Test"
+  inputs:
+    command: "test"
+    projects: "**/*Tests.csproj"
+    arguments: "--settings coverlet_runsettings.xml"
+
+- script: |
+    dotnet tool install --tool-path $(Agent.TempDirectory)/reportgenerator dotnet-reportgenerator-globaltool
+    $(Agent.TempDirectory)/reportgenerator/reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Common.TestResultsDirectory)/CodeCoverage -reporttypes:Html_Inline_AzurePipelines_Dark;Cobertura
+  displayName: "Create code coverage report"
+
+- task: PublishCodeCoverageResults@1
+  displayName: "Publish code coverage"
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: "$(Common.TestResultsDirectory)/CodeCoverage/Cobertura.xml"
+    reportDirectory: "$(Common.TestResultsDirectory)/CodeCoverage"
+
+- task: DotNetCoreCli@2
+  displayName: "Pack NuGet Packages"
+  inputs:
+    command: "pack"
+    packagesToPack: "**/Metetron.HttpConfigurationProvider.csproj"
+    versioningScheme: "off"
+    buildProperties: "PackageVersion=$(GitVersion.NuGetVersion)"
+
+- task: PublishBuildArtifacts@1
+  displayName: "Publish artifacts"
+  inputs:
+    pathToPublish: "$(Build.ArtifactStagingDirectory)"
+    ArtifactName: "drop"
+    publishLocation: "container"
