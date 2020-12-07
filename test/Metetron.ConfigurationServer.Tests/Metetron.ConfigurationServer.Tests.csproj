@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Metetron.ConfigurationServer\Metetron.ConfigurationServer.csproj" />
+    <ProjectReference Include="..\..\src\Metetron.ConfigurationServer\Metetron.ConfigurationServer.csproj" />
   </ItemGroup>
 
 </Project>
